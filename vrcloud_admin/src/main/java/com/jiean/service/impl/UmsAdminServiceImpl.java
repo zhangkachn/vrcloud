@@ -45,7 +45,14 @@ public class UmsAdminServiceImpl implements UmsAdminService {
 
     @Override
     public List<UmsResource> getResourceList(Long adminId) {
-        adminCacheService.getResourceList(adminId);
+        // redis获取请求资源值
+        List<UmsResource> resourceList = adminCacheService.getResourceList(adminId);
+        if(resourceList!=null){
+            return resourceList;
+        }
+        //redis中没有值 获取值设置到Redis中
+
+
 
         return null;
     }
