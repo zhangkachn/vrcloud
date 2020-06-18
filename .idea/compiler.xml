@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="vrcloud-mbg" />
+        <module name="vrcloud_admin" />
+        <module name="vrcloud-common" />
+        <module name="vrcloud-security" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="vrcloud-common" options="-parameters" />
+      <module name="vrcloud-mbg" options="-parameters" />
+      <module name="vrcloud-security" options="-parameters" />
+      <module name="vrcloud_admin" options="-parameters" />
+    </option>
+  </component>
+</project>
