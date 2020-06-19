@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="vrcloud-mbg" />
         <module name="vrcloud_admin" />
         <module name="vrcloud-common" />
+        <module name="vrcloud-mbg" />
         <module name="vrcloud-security" />
       </profile>
     </annotationProcessing>

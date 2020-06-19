@@ -1,6 +1,7 @@
 package com.jeian.vrcloud.mbg.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
  * 用户登录参数
  * Created by zhangkang on 2020/6/18
  */
+@Data
 public class UmsAdminParam {
     @ApiModelProperty(value = "用户名", required = true) // swagger包中
     @NotEmpty(message = "用户名不能为空")    // java包中
@@ -25,4 +27,6 @@ public class UmsAdminParam {
     private String nickName;
     @ApiModelProperty(value = "备注")
     private String note;
+
+
 }

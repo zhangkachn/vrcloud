@@ -6,6 +6,7 @@ import com.jiean.service.RedisService;
 import com.jiean.service.UmsAdminCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * Created by zhangkang on 2020/6/18
  */
+@Service
 public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
 
     @Value("${redis.database}")
@@ -54,25 +56,30 @@ public class UmsAdminCacheServiceImpl implements UmsAdminCacheService {
     @Override
     public UmsAdmin getAdmin(String username) {
         String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + username;
+        UmsAdmin umsAdmin = (UmsAdmin) redisService.get(key);
+        System.out.println(122);
         return (UmsAdmin) redisService.get(key);
     }
 
     @Override
     public void setAdmin(UmsAdmin admin) {
         String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + admin.getUsername();
-        redisService.set(key, admin, REDIS_EXPIRE);
+        redisService.set(key, admin, REDIS_EXPIRE); // REDIS_EXPIRE是过期时间，过期时间为10分钟
     }
 
     @Override
     public List<UmsResource> getResourceList(Long adminId) {
         String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + adminId;
+        List<UmsResource> umsResources = (List<UmsResource>) redisService.get(key);
+        System.out.println("qwqw");
         return (List<UmsResource>)redisService.get(key);
 
     }
 
     @Override
     public void setResourceList(Long adminId, List<UmsResource> resourceList) {
-
+        String key = REDIS_DATABASE + ":" + REDIS_KEY_ADMIN + ":" + adminId;
+        redisService.set(key, resourceList, REDIS_EXPIRE);
 
     }
 }
