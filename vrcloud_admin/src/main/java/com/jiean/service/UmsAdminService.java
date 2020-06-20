@@ -1,9 +1,6 @@
 package com.jiean.service;
 
-import com.jeian.vrcloud.mbg.model.UmsAdmin;
-import com.jeian.vrcloud.mbg.model.UmsAdminLoginParam;
-import com.jeian.vrcloud.mbg.model.UmsAdminParam;
-import com.jeian.vrcloud.mbg.model.UmsResource;
+import com.jeian.vrcloud.mbg.model.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
@@ -32,4 +29,30 @@ public interface UmsAdminService {
      * 获取指定用户的可访问资源
      */
     List<UmsResource> getResourceList(Long adminId);
+
+    /**
+     *获取用户信息
+     */
+    UmsAdmin getAdminByUsername(String username);
+
+    /**
+     *根据用户名或姓名分页获取用户列表
+     */
+    List<UmsAdmin> list(String keyword, Integer pageSize, Integer pageNum);
+
+
+    /**
+     * 修改指定用户信息
+     */
+    int update(Long id, UmsAdmin umsAdmin);
+
+    /**
+     * 删除指定用户信息
+     */
+    int delete(Long id);
+
+    /**
+     *获取指定用户的角色
+     */
+    List<UmsRole> getRoleList(Long adminId);
 }

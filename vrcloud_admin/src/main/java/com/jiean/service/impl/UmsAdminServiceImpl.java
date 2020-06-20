@@ -1,5 +1,7 @@
 package com.jiean.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.github.pagehelper.PageHelper;
 import com.jeian.vrcloud.mbg.mapper.UmsAdminLoginLogMapper;
 import com.jeian.vrcloud.mbg.mapper.UmsAdminMapper;
 import com.jeian.vrcloud.mbg.mapper.UmsAdminRoleRelationMapper;
@@ -10,6 +12,7 @@ import com.jiean.service.UmsAdminCacheService;
 import com.jiean.service.UmsAdminService;
 import com.jiean.vrcloud.security.util.JwtTokenUtil;
 import net.bytebuddy.asm.Advice;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -67,6 +70,53 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         return null;
     }
 
+    @Override
+    public List<UmsAdmin> list(String keyword, Integer pageSize, Integer pageNum) {
+        PageHelper.startPage(pageNum,pageSize);
+        UmsAdminExample umsAdminExample = new UmsAdminExample();
+        UmsAdminExample.Criteria criteria = umsAdminExample.createCriteria();
+        // 可以是账号或者姓名,模糊查询
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andUsernameLike("%"+keyword+"%");
+            umsAdminExample.or(umsAdminExample.createCriteria().andNickNameLike("%"+keyword+"%"));
+        }
+        return umsAdminMapper.selectByExample(umsAdminExample);
+    }
+
+    @Override
+    public int update(Long id, UmsAdmin umsAdmin) {
+        umsAdmin.setId(id);
+        UmsAdmin rawAdmin = umsAdminMapper.selectByPrimaryKey(id);
+        if (rawAdmin.getPassword().equals(umsAdmin.getPassword())) {
+            //与原加密密码相同的不需要修改
+            umsAdmin.setPassword(null);
+        } else {
+            //与原加密密码不同的需要加密修改
+            if (StrUtil.isEmpty(umsAdmin.getPassword())) {
+                umsAdmin.setPassword(null);
+            } else {
+                umsAdmin.setPassword(passwordEncoder.encode(umsAdmin.getPassword()));
+            }
+        }
+        int count = umsAdminMapper.updateByPrimaryKeySelective(umsAdmin);
+        return count;
+    }
+
+    @Override
+    public int delete(Long id) {
+        //删除需要先缓存中的数据删除
+        adminCacheService.delAdmin(id);
+        int count = umsAdminMapper.deleteByPrimaryKey(id);
+        adminCacheService.delResourceList(id);
+        return count;
+    }
+
+    @Override
+    public List<UmsRole> getRoleList(Long adminId) {
+        List<UmsRole> roleList= umsAdminRoleRelationDao.getRoleList(adminId);
+        return roleList;
+    }
+
 
     @Override
     public List<UmsResource> getResourceList(Long adminId) {
@@ -119,7 +169,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         //用户接下来可能执行一些权限访问机制下的受保护的操作，检查与当前安全上下文有关的必须的权限
         SecurityContextHolder.getContext().setAuthentication(authentication);
         token = jwtTokenUtil.generateToken(userDetails);
-        //insertLoginLog(username);
+        insertLoginLog(username);
         return token;
     }
 
@@ -147,7 +197,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         //从Redis获取用户数据
         UmsAdmin adminByUsername = getAdminByUsername(username);
         if (adminByUsername != null) {
-            // 资源数据
+            // 授权权限数据
             List<UmsResource> resourceList = getResourceList(adminByUsername.getId());
             return new AdminUserDetails(adminByUsername, resourceList);
         }
