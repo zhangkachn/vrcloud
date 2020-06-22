@@ -122,5 +122,19 @@ public class UmsAdminController {
         return CommonResult.success(roleList);
     }
 
+    // 根据用户id,修改用户角色中间表
+    @ApiOperation("给用户分配角色")
+    @RequestMapping(value = "/role/update", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateRole(@RequestParam("adminId") Long adminId,
+                                   @RequestParam("roleIds") List<Long> roleIds) {
+
+        int count = umsAdminService.updateRole(adminId,roleIds);
+        if(count>=0){
+            return CommonResult.success(count);
+        }
+        return CommonResult.failed();
+    }
+
 
 }

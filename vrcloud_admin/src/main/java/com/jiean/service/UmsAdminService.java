@@ -55,4 +55,10 @@ public interface UmsAdminService {
      *获取指定用户的角色
      */
     List<UmsRole> getRoleList(Long adminId);
+
+
+    /**
+     * 给用户分配角色
+     */
+    int updateRole(Long adminId, List<Long> roleIds);
 }

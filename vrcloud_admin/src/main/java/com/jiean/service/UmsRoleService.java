@@ -27,4 +27,30 @@ public interface UmsRoleService {
      * @return
      */
     List<UmsRole> list();
+
+
+    /**
+     *分页查询角色数据
+     */
+    List<UmsRole> listPage(String keyword, Integer pageSize, Integer pageNum);
+
+    /**
+     *添加角色
+     */
+    int create(UmsRole role);
+
+    /**
+     * 获取角色相关菜单
+     */
+    List<UmsMenu> listMenu(Long roleId);
+
+    /**
+     *
+     */
+    int allocMenu(Long roleId, List<Long> menuIds);
+
+    /**
+     * 给角色分配资源
+     */
+    int allocResource(Long roleId, List<Long> resourceIds);
 }

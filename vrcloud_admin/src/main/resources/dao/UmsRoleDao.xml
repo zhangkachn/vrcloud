@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jiean.dao.UmsRoleDao">
-<select id="getMenuList" resultType="com.jeian.vrcloud.mbg.model.UmsMenu">
+    <select id="getMenuList" resultType="com.jeian.vrcloud.mbg.model.UmsMenu">
 SELECT
             m.id id,
             m.parent_id parentId,
@@ -20,6 +20,41 @@ where ar.admin_id=#{adminId}
 AND m.id IS NOT NULL
         GROUP BY
             m.id
-</select>
+    </select>
 
+
+    <select id="getMenuListByRoleId" resultType="com.jeian.vrcloud.mbg.model.UmsMenu">
+    SELECT
+        m.id id,
+        m.parent_id parentId,
+        m.create_time createTime,
+        m.title title,
+        m.level level,
+        m.sort sort,
+        m.name name,
+        m.icon icon,
+        m.hidden hidden
+    FROM ums_role_menu_relation rmr
+    LEFT JOIN ums_menu m on rmr.menu_id=m.id
+    where rmr.role_id= #{roleId}
+        AND m.id IS NOT NULL
+        GROUP BY
+            m.id
+    </select>
+
+    <insert id="insertRoleMenuRelation">
+     insert INTO ums_role_menu_relation (role_id,menu_id) values 
+     <foreach collection="list" separator="," item="item" index="index">
+         (#{item.roleId,jdbcType=BIGINT},
+         #{item.menuId,jdbcType=BIGINT})
+     </foreach>
+    </insert>
+
+    <insert id="insertRoleesourceRelation">
+        insert INTO ums_role_menu_relation (role_id,menu_id) values
+        <foreach collection="list" separator="," item="item" index="index">
+            (#{item.roleId,jdbcType=BIGINT},
+            #{item.menuId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
 </mapper>

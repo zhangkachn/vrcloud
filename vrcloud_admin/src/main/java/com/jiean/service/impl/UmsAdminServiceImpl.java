@@ -23,11 +23,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +53,10 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private UmsAdminLoginLogMapper umsAdminLoginLogMapper;
+  /*  @Autowired
+    private UmsAdminRoleRelationMapper umsAdminRoleRelationMapper;*/
+
+
 
 
     public UmsAdmin getAdminByUsername(String username) {
@@ -115,6 +122,30 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     public List<UmsRole> getRoleList(Long adminId) {
         List<UmsRole> roleList= umsAdminRoleRelationDao.getRoleList(adminId);
         return roleList;
+    }
+
+    @Override
+    public int updateRole(Long adminId, List<Long> roleIds) {
+        // 修改操作是先删除原来关系，在关联新的内容
+        int count = roleIds == null ? 0 : roleIds.size();
+        UmsAdminRoleRelationExample umsAdminRoleRelationExample = new UmsAdminRoleRelationExample();
+        umsAdminRoleRelationExample.createCriteria().andAdminIdEqualTo(adminId);
+        int i = umsAdminRoleRelationMapper.deleteByExample(umsAdminRoleRelationExample);
+        if(!CollectionUtils.isEmpty(roleIds)){
+            ArrayList<UmsAdminRoleRelation> adminRoleRelations = new ArrayList<>();
+            for (Long roleId :roleIds) {
+                UmsAdminRoleRelation umsAdminRoleRelation=  new UmsAdminRoleRelation();
+                umsAdminRoleRelation.setAdminId(adminId);
+                umsAdminRoleRelation.setRoleId(roleId);
+                adminRoleRelations.add(umsAdminRoleRelation);
+            }
+             // mybatisgenertor生成的代码是不能进行批量新增的，需要自己来进行新增操作
+            int i1 = umsAdminRoleRelationDao.insertList(adminRoleRelations);
+
+        }
+        // 修改用户的角色后，用户的资源列表也会发生变化的，所以需要删除用户存储的资源json
+        adminCacheService.delResourceList(adminId);
+        return count;
     }
 
 
