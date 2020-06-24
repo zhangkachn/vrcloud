@@ -1,5 +1,6 @@
 package com.jiean.service;
 
+import com.jeian.vrcloud.mbg.model.UmsMenu;
 import com.jiean.dto.UmsMenuNode;
 
 import java.util.List;
@@ -14,4 +15,9 @@ public interface UmsMenuService {
      *树形结构返回所有菜单列表
      */
     List<UmsMenuNode> treeList();
+
+    /**
+     *分页查询菜单列表
+     */
+    List<UmsMenu> list(Long parentId, Integer pageNum, Integer pageSize);
 }

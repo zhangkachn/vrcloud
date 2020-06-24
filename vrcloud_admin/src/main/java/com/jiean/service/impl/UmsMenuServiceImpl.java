@@ -1,5 +1,7 @@
 package com.jiean.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.util.StringUtil;
 import com.jeian.vrcloud.mbg.mapper.UmsMenuMapper;
 import com.jeian.vrcloud.mbg.model.UmsMenu;
 import com.jeian.vrcloud.mbg.model.UmsMenuExample;
@@ -29,6 +31,18 @@ public class UmsMenuServiceImpl implements UmsMenuService {
                 .filter(menu -> menu.getParentId().equals(0L))// 返回一次流
                 .map(menu -> covertMenuNode(menu, umsMenus)).collect(Collectors.toList());
         return result;
+    }
+
+    @Override
+    public List<UmsMenu> list(Long parentId, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        UmsMenuExample umsMenuExample = new UmsMenuExample();
+        UmsMenuExample.Criteria criteria = umsMenuExample.createCriteria();
+        if(parentId!=null){
+            criteria.andParentIdEqualTo(parentId);
+        }
+        List<UmsMenu> umsMenus = menuMapper.selectByExample(umsMenuExample);
+        return umsMenus;
     }
 
     /**
