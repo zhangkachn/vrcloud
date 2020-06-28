@@ -106,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new DynamicSecurityFilter();
     }
 
+    // 把DynamicSecurityMetadataSource对象注入到容器中
     @ConditionalOnBean(name = "dynamicSecurityService")
     @Bean
     public DynamicSecurityMetadataSource dynamicSecurityMetadataSource() {
